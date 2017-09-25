@@ -7,13 +7,42 @@ from .serializers import JobSerializer
 # Create your views here.
 
 
+# class job_api(GenericAPIView, mixins.ListModelMixin):
+#     queryset = Job.objects.all()
+#     serializer_class = JobSerializer
+#
+#     def get(self,request,*args,**kwargs):
+#         return self.list(request,*args,**kwargs)
+#
+#     def get_queryset(self):
+#         queryset = Job.objects.all()
+#         return queryset
+#
+
+# query params 로 필터링 하는 경우
 class job_api(GenericAPIView, mixins.ListModelMixin):
-    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Job.objects.all()
+        company_name = self.request.query_params.get('company', None)
+        if company_name is not None:
+            queryset = queryset.filter(company__contains=company_name)
+        return queryset
+
+
+class job_url_api(GenericAPIView, mixins.ListModelMixin):
+
     serializer_class = JobSerializer
 
     def get(self,request,*args,**kwargs):
         return self.list(request,*args,**kwargs)
 
     def get_queryset(self):
-        queryset = Job.objects.all()
-        return queryset
+        company_name = self.kwargs['company']
+        job = self.kwargs['job_name']
+        return Job.objects.filter(company__contains=company_name).filter(job_name__contains=job)
+

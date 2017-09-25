@@ -17,12 +17,14 @@ from django.conf import settings
 from django.conf.urls import url,include
 from django.contrib import admin
 
-from position.views import job_api
+from position.views import job_api,job_url_api
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # REST API
-    url(r'^api/job/', job_api.as_view()),
+    url(r'^api/job/all', job_api.as_view()),
 
+    # REST API URL
+    url(r'^api/job/(?P<company>.+)/(?P<job_name>.+)/$',job_url_api.as_view()),
 ]
