@@ -1,5 +1,7 @@
+import django_filters.rest_framework
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, generics
 from rest_framework.generics import GenericAPIView
 
 from .models import Job
@@ -20,18 +22,26 @@ from .serializers import JobSerializer
 #
 
 # query params 로 필터링 하는 경우
-class job_api(GenericAPIView, mixins.ListModelMixin):
+# class job_api(GenericAPIView, mixins.ListModelMixin):
+#     serializer_class = JobSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+#
+#     def get_queryset(self):
+#         queryset = Job.objects.all()
+#         company_name = self.request.query_params.get('company', None)
+#         if company_name is not None:
+#             queryset = queryset.filter(company__contains=company_name)
+#         return queryset
+
+
+class job_api(generics.ListAPIView):
     serializer_class = JobSerializer
+    queryset = Job.objects.all()
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_fields = ('job_name', 'company')
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def get_queryset(self):
-        queryset = Job.objects.all()
-        company_name = self.request.query_params.get('company', None)
-        if company_name is not None:
-            queryset = queryset.filter(company__contains=company_name)
-        return queryset
 
 
 class job_url_api(GenericAPIView, mixins.ListModelMixin):
