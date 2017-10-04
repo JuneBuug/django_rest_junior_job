@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render
 from rest_framework import viewsets, mixins, generics
 from rest_framework.generics import GenericAPIView
-
+from rest_framework import filters
 from .models import Job
 from .serializers import JobSerializer
 # Create your views here.
@@ -36,10 +36,19 @@ from .serializers import JobSerializer
 #         return queryset
 
 
+# class job_api(generics.ListAPIView):
+#     serializer_class = JobSerializer
+#     queryset = Job.objects.all()
+#     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+#     filter_fields = ('job_name', 'company')
+#
+
+
 class job_api(generics.ListAPIView):
     serializer_class = JobSerializer
     queryset = Job.objects.all()
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (filters.SearchFilter,django_filters.rest_framework.DjangoFilterBackend,)
+    search_fields = ('job_name', 'company')
     filter_fields = ('job_name', 'company')
 
 
